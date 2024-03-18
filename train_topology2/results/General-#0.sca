@@ -1,0 +1,66 @@
+version 3
+run General-0-20240304-04:14:20-6808
+attr configname General
+attr datetime 20240304-04:14:20
+attr datetimef 20240304-041420
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsd ""
+attr iterationvarsf ""
+attr measurement ""
+attr network TrainTopology2
+attr processid 6808
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+config image-path ../../inet4.5/images:../../simu5G/images
+config network TrainTopology2
+config *.gnb*.numX2Apps 1
+config *.gnb*.x2App[*].server.localPort "5000 + ancestorIndex(1)"
+config *.gnb1.x2App[0].client.connectAddress "\"gnb2%x2ppp0\""
+config *.gnb2.x2App[0].client.connectAddress "\"gnb1%x2ppp0\""
+config *.server.ipv4.routingTable.routingFile "\"server.mrt\""
+config *.*.dstt.destAddress "\"server\""
+config *.*Ue[0].masterId 0
+config *.*Ue[0].nrMacCellId 1
+config *.*Ue[0].nrMasterId 1
+config *.*Ue[1].masterId 0
+config *.*Ue[1].nrMacCellId 1
+config *.*Ue[1].nrMasterId 1
+config *.*Ue[2].masterId 0
+config *.*Ue[2].nrMacCellId 1
+config *.*Ue[2].nrMasterId 2
+config *.*Ue[3].masterId 0
+config *.*Ue[3].nrMacCellId 1
+config *.*Ue[3].nrMasterId 2
+config *.T*Client*.numApps 1
+config *.T*Client*.app[*].typename UdpApp
+config *.T*Client*.app[0].display-name besteffort
+config *.T*Client*.app[*].io.destAddress "\"server\""
+config *.T*Client*.app[0].io.destPort 1000
+config *.T*Client*.app[0].io.localPort 1000
+config *.T*Client*.app[0].source.packetLength 20B
+config *.T*Client*.app[0].source.productionInterval 20ms
+config *.T*Client*.app[*].source.initialProductionOffset 0s
+config *.B*Client*.numApps 1
+config *.B*Client*.app[*].typename UdpApp
+config *.B*Client*.app[0].display-name video
+config *.B*Client*.app[*].io.destAddress "\"server\""
+config *.B*Client*.app[0].io.destPort 1001
+config *.B*Client*.app[0].io.localPort 1000
+config *.B*Client*.app[0].source.packetLength 30B
+config *.B*Client*.app[0].source.productionInterval 10ms
+config *.B*Client*.app[*].source.initialProductionOffset 0s
+config *.server.numApps 2
+config *.server.app[*].typename UdpEchoApp
+config *.server.app[0].display-name besteffort
+config *.server.app[1].display-name video
+config *.server.app[0].localPort 1000
+config *.server.app[1].localPort 1001
+
+scalar TrainTopology2.gnb1.x2App[0].client ums 1452
+scalar TrainTopology2.gnb2.x2App[0].client ums 1452
+

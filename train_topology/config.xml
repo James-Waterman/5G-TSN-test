@@ -1,0 +1,4 @@
+<config>
+	<interface hosts='**' address='10.x.x.x' netmask='255.x.x.x'/>
+	<multicast-group hosts="T*Client*" interfaces="eth0" address="224.0.1.1"/>
+</config>
