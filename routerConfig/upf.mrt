@@ -1,0 +1,27 @@
+# filename: upf.mrt
+# author: JamesWaterman
+
+ifconfig:
+
+# interface ppp to gnb
+name: ppp0
+    inet_addr: 10.0.0.13
+    Mask: 255.255.255.0
+    MTU: 1500
+    POINTTOPOINT MULTICAST
+# interface ppp to switch
+name: pppIf
+	inet_addr: 10.0.0.14
+	Mask: 255.255.255.0
+	MTU: 1500
+	POINTTOPOINT MULTICAST
+ifconfigend.
+
+
+route:
+
+#Destination     Gateway          Genmask            Flags  Metric  Iface
+10.0.0.8         10.0.0.13        255.255.255.0    H      0       ppp0
+10.0.0.17         10.0.0.14        255.255.255.0    H      0       pppIf
+0.0.0.0          *                0.0.0.0            G      0       ppp0
+routeend.

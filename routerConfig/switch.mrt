@@ -1,0 +1,27 @@
+# filename: server.mrt
+# author: JamesWaterman
+
+ifconfig:
+
+# interface 0 to server
+name: eth0
+    inet_addr: 10.0.0.15
+    Mask: 255.255.255.0
+    MTU: 1500
+    POINTTOPOINT MULTICAST
+
+name: eth1
+	inet_addr: 10.0.0.16
+	Mask: 255.255.255.0
+	MTU: 1500
+	POINTTOPOINT MULTICAST
+ifconfigend.
+
+
+route:
+
+#Destination     Gateway          Genmask          Flags  Metric  Iface
+10.0.1.2         10.0.0.16        255.255.255.255    H      0       eth0
+10.0.1.7         10.0.0.15        255.255.255.255    H      0       eth1
+0.0.0.0          *                0.0.0.0            G      0       eth1
+routeend.

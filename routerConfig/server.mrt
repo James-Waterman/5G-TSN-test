@@ -1,0 +1,21 @@
+# filename: server.mrt
+# author: JamesWaterman
+
+ifconfig:
+
+# interface 0 to switch
+name: eth0
+    inet_addr: 10.0.0.17
+    Mask: 255.255.255.0
+    MTU: 1500
+    POINTTOPOINT MULTICAST
+
+ifconfigend.
+
+
+route:
+
+#Destination     Gateway          Genmask          Flags  Metric  Iface
+10.0.0.8         10.0.0.17        255.255.255.0    H      0       eth0
+0.0.0.0          *                0.0.0.0            G      0       eth0
+routeend.

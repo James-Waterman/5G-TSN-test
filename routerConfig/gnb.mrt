@@ -1,0 +1,28 @@
+# filename: gnb.mrt
+# author: JamesWaterman
+
+ifconfig:
+
+# interface 0 to upf
+name: pppIf
+    inet_addr: 10.0.0.11
+    Mask: 255.255.255.0
+    MTU: 1500
+    POINTTOPOINT MULTICAST
+
+# interface cellular to ue
+name: cellular
+	inet_addr: 10.0.0.12
+	Mask: 255.255.255.0
+	MTU: 1500
+	POINTTOPOINT MULTICAST
+ifconfigend.
+
+
+route:
+
+#Destination     Gateway          Genmask            Flags  Metric  Iface
+10.0.0.17         10.0.0.11        255.255.255.0    H      0       pppIf
+10.0.0.8         10.0.0.12        255.255.255.0    H      0       cellular
+0.0.0.0          *                0.0.0.0            G      0       cellular
+routeend.

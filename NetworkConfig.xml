@@ -1,0 +1,25 @@
+<config>
+	<interface hosts="tsnClient1" address="10.0.1.2" netmask="255.255.255.x" macaddress="0A-AA-00-00-0A-AB"/>
+	<interface hosts="ue1" address="10.0.2.2" names="eth0" netmask="255.255.255.x"/>
+	<interface hosts="ue1" address="10.0.3.2" names="cellular" netmask="255.255.255.x"/>
+	
+	<interface hosts="TCUClient0" address="10.0.1.2" netmask="255.255.255.x" macaddress="0A-AA-01-01-00-01"/>
+	<interface hosts="TCUUe0" address="10.0.2.2" names="cellular" netmask="255.255.255.x" macaddress="0A-AA-01-02-00-01"/>
+	<interface hosts="TCUClient1" address="10.0.1.3" netmask="255.255.255.x" macaddress="0A-AA-01-01-00-02"/>
+	<interface hosts="TCUUe1" address="10.0.2.3" names="cellular" netmask="255.255.255.x" macaddress="0A-AA-01-02-00-02"/>
+	<interface hosts="TCUClient2" address="10.0.1.4" netmask="255.255.255.x" macaddress="0A-AA-01-01-00-03"/>
+	<interface hosts="TCUUe2" address="10.0.2.4" names="cellular" netmask="255.255.255.x" macaddress="0A-AA-01-02-00-03"/>
+	<interface hosts="TCUClient3" address="10.0.1.5" netmask="255.255.255.x" macaddress="0A-AA-01-01-00-04"/>
+	<interface hosts="TCUUe3" address="10.0.2.5" names="cellular" netmask="255.255.255.x" macaddress="0A-AA-01-02-00-04"/>
+	
+	<interface hosts="BCUClient0" address="10.1.1.2" netmask="255.255.255.x" macaddress="0A-AA-02-01-00-01"/>
+	<interface hosts="BCUUe0" address="10.1.2.2" names="cellular" netmask="255.255.255.x" macaddress="0A-AA-02-02-00-01"/>
+	<interface hosts="BCUClient1" address="10.1.1.3" netmask="255.255.255.x" macaddress="0A-AA-02-01-00-02"/>
+	<interface hosts="BCUUe1" address="10.1.2.3" names="cellular" netmask="255.255.255.x" macaddress="0A-AA-02-02-00-02"/>
+	<interface hosts="BCUClient2" address="10.1.1.4" netmask="255.255.255.x" macaddress="0A-AA-02-01-00-03"/>
+	<interface hosts="BCUUe2" address="10.1.2.4" names="cellular" netmask="255.255.255.x" macaddress="0A-AA-02-02-00-03"/>
+	<interface hosts="BCUClient3" address="10.1.1.5" netmask="255.255.255.x" macaddress="0A-AA-02-01-00-04"/>
+	<interface hosts="BCUUe3" address="10.1.2.5" names="cellular" netmask="255.255.255.x" macaddress="0A-AA-02-02-00-04"/>
+	
+	<interface hosts="**" address="10.x.x.x" netmask="255.x.x.x"/>
+</config>

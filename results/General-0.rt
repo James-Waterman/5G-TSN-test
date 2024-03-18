@@ -1,0 +1,12 @@
++R #0  0s  TSN5G.tsnServer  10.0.0.1  127.0.0.0/8  <unspec>  lo0
++R #0  0s  TSN5G.tsnServer  10.0.0.1  10.0.0.0/30  <unspec>  eth0
++R #0  0s  TSN5G.upf  10.0.0.9  127.0.0.0/8  <unspec>  lo0
++R #0  0s  TSN5G.upf  10.0.0.9  10.0.0.4/30  <unspec>  ppp0
++R #0  0s  TSN5G.upf  10.0.0.9  10.0.0.8/30  <unspec>  pppIf
++R #0  0s  TSN5G.gnb  10.0.3.3  10.0.3.0/30  <unspec>  cellular
++R #0  0s  TSN5G.gnb  10.0.3.3  10.0.0.4/30  <unspec>  pppIf
++R #0  0s  TSN5G.gnb  10.0.3.3  10.0.0.12/30  <unspec>  pppMEHostIf
++R #0  0s  TSN5G.tsnClient1  10.0.1.2  127.0.0.0/8  <unspec>  lo0
++R #0  0s  TSN5G.tsnClient1  10.0.1.2  10.0.1.0/30  <unspec>  eth0
++R #0  0s  TSN5G.ue1  10.0.3.2  127.0.0.0/8  <unspec>  lo0
++R #0  0s  TSN5G.ue1  10.0.3.2  10.0.3.0/30  <unspec>  cellular

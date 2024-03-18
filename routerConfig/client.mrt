@@ -1,0 +1,19 @@
+# filename: client.mrt
+# author: JamesWaterman
+
+ifconfig:
+
+# interface eth0 to ue1
+name: eth0
+    inet_addr: 10.0.0.8
+    Mask: 255.255.255.0
+    
+ifconfigend.
+
+
+route:
+
+#Destination     Gateway       Genmask          Flags  Metric  Iface
+default:         10.0.0.8      0.0.0.0          G      0       eth0
+
+routeend.

@@ -1,0 +1,346 @@
+file 13601 1706252969                                           
+version 3
+run General-0-20240126-08:09:17-9479
+attr configname General
+attr datetime 20240126-08:09:17
+attr datetimef 20240126-080917
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsd ""
+attr iterationvarsf ""
+attr measurement ""
+attr network TSN5G
+attr processid 9479
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+config image-path ../inet4.5/images:../simu5G/images
+config network TSN5G
+config *.*.macCellId 1
+config *.*.masterId 1
+config *.*.nrMacCellId 1
+config *.*.nrMasterId 1
+config *.configurator.config "xmldoc(\"./NetworkConfig.xml\")"
+config *.xmlReader.networkconfig "xmldoc(\"./NetworkConfig.xml\")"
+config *.visualizer.interfaceTableVisualizer.displayInterfaceTables true
+config *.tsnClient1.eth[0].address "\"0A-AA-00-00-0A-AB\""
+config *.tsnClient*.numApps 1
+config *.tsnClient*.app[*].typename UdpSourceApp
+config *.tsnClient1.app[0].display-name besteffort
+config *.tsnClient*.app[*].io.destAddress "\"tsnServer\""
+config *.tsnClient1.app[0].io.destPort 1000
+config *.tsnClient*.app[*].source.packetLength "1000B - 54B"
+config *.tsnClient1.app[0].source.productionInterval exponential(2000us)
+config *.tsnServer.numApps 2
+config *.tsnServer.app[*].typename UdpSinkApp
+config *.tsnServer.app[0].display-name besteffort
+config *.tsnServer.app[0].io.localPort 1000
+config *.tsnClient*.hasOutgoingStreams true
+config *.tsnServer.hasIncomingStreams true
+config *.tsnClient*.bridging.streamIdentifier.identifier.mapping "[{stream: \"besteffort\", packetFilter: expr(udp.destPort == 1000)}]"
+config *.tsnClient*.bridging.streamCoder.encoder.mapping "[{stream: \"besteffort\", pcp: 0}]"
+config *.tsnSwitch.bridging.streamCoder.decoder.mapping "[{pcp: 0, stream: \"besteffort\"}]"
+config *.tsnSwitch.hasIngressTrafficFiltering true
+config *.tsnSwitch.bridging.streamFilter.ingress.typename SimpleIeee8021qFilter
+config *.tsnSwitch.bridging.streamFilter.ingress.numStreams 1
+config *.tsnSwitch.bridging.streamFilter.ingress.classifier.mapping "{besteffort: 0}"
+config *.tsnSwitch.bridging.streamFilter.ingress.*[0].display-name besteffort
+config *.tsnSwitch.bridging.streamFilter.ingress.meter[*].typename EligibilityTimeMeter
+config *.tsnSwitch.bridging.streamFilter.ingress.meter[*].committedInformationRate 20Mbps
+config *.tsnSwitch.bridging.streamFilter.ingress.meter[*].committedBurstSize 10kB
+config *.tsnSwitch.bridging.streamFilter.ingress.filter[*].typename EligibilityTimeFilter
+config *.tsnSwitch.hasEgressTrafficShaping true
+config *.tsnSwitch.bridging.directionReverser.reverser.excludeEncapsulationProtocols "[\"ieee8021qctag\"]"
+config *.tsnSwitch.eth[*].macLayer.queue.numTrafficClasses 1
+config *.tsnSwitch.eth[*].macLayer.queue.*[0].display-name besteffort
+config *.tsnSwitch.eth[*].macLayer.queue.queue[0].typename EligibilityTimeQueue
+config *.tsnSwitch.eth[*].macLayer.queue.queue[1].typename EligibilityTimeQueue
+config *.tsnSwitch.eth[*].macLayer.queue.transmissionSelectionAlgorithm[0].typename Ieee8021qAsynchronousShaper
+
+vector 0 TSN5G.tsnServer.eth[0].phyLayer.interFrameGapInserter interpacketGap:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "count(interpacketGapStarted) - count(interpacketGapEnded)"
+attr title "interpacket gap state"
+attr type int
+vector 1 TSN5G.tsnServer.eth[0].phyLayer.transmitter transmitting:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "count(transmissionStarted) - count(transmissionEnded)"
+attr title "transmitting state"
+attr type int
+vector 2 TSN5G.tsnServer.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 3 TSN5G.tsnServer.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 4 TSN5G.tsnServer.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+vector 5 TSN5G.tsnSwitch.eth[0].phyLayer.interFrameGapInserter interpacketGap:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "count(interpacketGapStarted) - count(interpacketGapEnded)"
+attr title "interpacket gap state"
+attr type int
+vector 6 TSN5G.tsnSwitch.eth[0].phyLayer.transmitter transmitting:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "count(transmissionStarted) - count(transmissionEnded)"
+attr title "transmitting state"
+attr type int
+vector 7 TSN5G.tsnSwitch.eth[1].phyLayer.interFrameGapInserter interpacketGap:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "count(interpacketGapStarted) - count(interpacketGapEnded)"
+attr title "interpacket gap state"
+attr type int
+vector 8 TSN5G.tsnSwitch.eth[1].phyLayer.transmitter transmitting:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "count(transmissionStarted) - count(transmissionEnded)"
+attr title "transmitting state"
+attr type int
+vector 9 TSN5G.upf.ppp[0].ppp transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source transmissionStateChanged
+attr title "tx state"
+vector 10 TSN5G.upf.pppIf.ppp transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source transmissionStateChanged
+attr title "tx state"
+vector 11 TSN5G.upf.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 12 TSN5G.upf.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 13 TSN5G.upf.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+vector 14 TSN5G.gnb.pppIf.ppp transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source transmissionStateChanged
+attr title "tx state"
+vector 15 TSN5G.gnb.pppMEHostIf.ppp transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source transmissionStateChanged
+attr title "tx state"
+vector 16 TSN5G.gnb.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 17 TSN5G.gnb.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 18 TSN5G.gnb.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+vector 19 TSN5G.tsnClient1.eth[0].phyLayer.interFrameGapInserter interpacketGap:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "count(interpacketGapStarted) - count(interpacketGapEnded)"
+attr title "interpacket gap state"
+attr type int
+vector 20 TSN5G.tsnClient1.eth[0].phyLayer.transmitter transmitting:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "count(transmissionStarted) - count(transmissionEnded)"
+attr title "transmitting state"
+attr type int
+vector 21 TSN5G.tsnClient1.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 22 TSN5G.tsnClient1.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 23 TSN5G.tsnClient1.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+vector 24 TSN5G.ue1.udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 25 TSN5G.ue1.udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 26 TSN5G.ue1.udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+vector 27 TSN5G.nwtt.ppp.ppp transmissionState:vector ETV
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source transmissionStateChanged
+attr title "tx state"
+vector 28 TSN5G.ue1.cellularNic.phy servingCell:vector ETV
+attr recordingmode vector
+attr source servingCell
+attr title "ID of the serving eNodeB for the UE"
+attr unit ""
+vector 29 TSN5G.ue1.cellularNic.nrPhy servingCell:vector ETV
+attr recordingmode vector
+attr source servingCell
+attr title "ID of the serving eNodeB for the UE"
+attr unit ""
+vector 30 TSN5G.tsnSwitch.bridging.streamFilter.ingress.meter[0] numTokens:vector ETV
+attr interpolationmode linear
+attr moduledisplaypath TSN5G.tsnSwitch.bridging.streamFilter.ingress.besteffort
+attr recordingmode vector
+attr source tokensChanged
+attr title "number of tokens"
+attr unit tk
+vector 31 TSN5G.tsnSwitch.eth[0].macLayer.queue.transmissionSelectionAlgorithm[0] gateState:vector ETV
+attr enum CLOSED,OPEN
+attr interpolationmode sample-hold
+attr moduledisplaypath TSN5G.tsnSwitch.eth[0].macLayer.queue.besteffort
+attr recordingmode vector
+attr source gateStateChanged
+attr title "gate state"
+attr type enum
+vector 32 TSN5G.tsnSwitch.eth[0].macLayer.queue.transmissionSelectionAlgorithm[0] remainingEligibilityTime:vector ETV
+attr interpolationmode linear
+attr moduledisplaypath TSN5G.tsnSwitch.eth[0].macLayer.queue.besteffort
+attr recordingmode vector
+attr source remainingEligibilityTimeChanged
+attr title "remaining eligibility time"
+attr unit s
+vector 33 TSN5G.tsnSwitch.eth[1].macLayer.queue.transmissionSelectionAlgorithm[0] gateState:vector ETV
+attr enum CLOSED,OPEN
+attr interpolationmode sample-hold
+attr moduledisplaypath TSN5G.tsnSwitch.eth[1].macLayer.queue.besteffort
+attr recordingmode vector
+attr source gateStateChanged
+attr title "gate state"
+attr type enum
+vector 34 TSN5G.tsnSwitch.eth[1].macLayer.queue.transmissionSelectionAlgorithm[0] remainingEligibilityTime:vector ETV
+attr interpolationmode linear
+attr moduledisplaypath TSN5G.tsnSwitch.eth[1].macLayer.queue.besteffort
+attr recordingmode vector
+attr source remainingEligibilityTimeChanged
+attr title "remaining eligibility time"
+attr unit s
+vector 35 TSN5G.tsnClient1.app[0].source packetLengths:vector ETV
+attr interpolationmode none
+attr moduledisplaypath TSN5G.tsnClient1.besteffort.source
+attr recordingmode vector
+attr source packetLength(packetPushed)
+attr title "packet lengths"
+attr unit b
+vector 36 TSN5G.tsnSwitch.bridging.streamFilter.ingress.gate[0] gateState:vector ETV
+attr enum CLOSED,OPEN
+attr interpolationmode sample-hold
+attr moduledisplaypath TSN5G.tsnSwitch.bridging.streamFilter.ingress.besteffort
+attr recordingmode vector
+attr source gateStateChanged
+attr title "gate state"
+attr type enum
+vector 37 TSN5G.tsnSwitch.eth[0].macLayer.queue.transmissionGate[0] gateState:vector ETV
+attr enum CLOSED,OPEN
+attr interpolationmode sample-hold
+attr moduledisplaypath TSN5G.tsnSwitch.eth[0].macLayer.queue.besteffort
+attr recordingmode vector
+attr source gateStateChanged
+attr title "gate state"
+attr type enum
+vector 38 TSN5G.tsnSwitch.eth[0].macLayer.queue.transmissionGate[0] guardBandState:vector ETV
+attr enum ON,OFF
+attr interpolationmode sample-hold
+attr moduledisplaypath TSN5G.tsnSwitch.eth[0].macLayer.queue.besteffort
+attr recordingmode vector
+attr source guardBandStateChanged
+attr title "guard band state"
+attr type enum
+vector 39 TSN5G.tsnSwitch.eth[1].macLayer.queue.transmissionGate[0] gateState:vector ETV
+attr enum CLOSED,OPEN
+attr interpolationmode sample-hold
+attr moduledisplaypath TSN5G.tsnSwitch.eth[1].macLayer.queue.besteffort
+attr recordingmode vector
+attr source gateStateChanged
+attr title "gate state"
+attr type enum
+vector 40 TSN5G.tsnSwitch.eth[1].macLayer.queue.transmissionGate[0] guardBandState:vector ETV
+attr enum ON,OFF
+attr interpolationmode sample-hold
+attr moduledisplaypath TSN5G.tsnSwitch.eth[1].macLayer.queue.besteffort
+attr recordingmode vector
+attr source guardBandStateChanged
+attr title "guard band state"
+attr type enum
+0	13150 16 0 0 0 0 2 0 0 0 0
+1	13166 16 0 0 0 0 2 0 0 0 0
+2	13182 8 0 0 0 0 1 0 0 0 0
+3	13190 8 0 0 0 0 1 0 0 0 0
+4	13198 8 0 0 0 0 1 0 0 0 0
+5	13206 16 0 0 0 0 2 0 0 0 0
+6	13222 16 0 0 0 0 2 0 0 0 0
+7	13238 16 0 0 0 0 2 0 0 0 0
+8	13254 16 0 0 0 0 2 0 0 0 0
+9	13270 8 0 0 0 0 1 0 0 0 0
+10	13278 9 0 0 0 0 1 0 0 0 0
+11	13287 9 0 0 0 0 1 0 0 0 0
+12	13296 9 0 0 0 0 1 0 0 0 0
+13	13305 9 0 0 0 0 1 0 0 0 0
+14	13314 9 0 0 0 0 1 0 0 0 0
+15	13323 9 0 0 0 0 1 0 0 0 0
+16	13332 9 0 0 0 0 1 0 0 0 0
+17	13341 9 0 0 0 0 1 0 0 0 0
+18	13350 9 0 0 0 0 1 0 0 0 0
+19	13359 18 0 0 0 0 2 0 0 0 0
+20	13377 18 0 0 0 0 2 0 0 0 0
+21	13395 9 0 0 0 0 1 0 0 0 0
+22	13404 9 0 0 0 0 1 0 0 0 0
+23	13413 9 0 0 0 0 1 0 0 0 0
+24	13422 9 0 0 0 0 1 0 0 0 0
+25	13431 9 0 0 0 0 1 0 0 0 0
+26	13440 9 0 0 0 0 1 0 0 0 0
+27	13449 9 0 0 0 0 1 0 0 0 0
+28	13458 9 0 0 0 0 1 1 1 1 1
+29	13467 9 0 0 0 0 1 1 1 1 1
+30	13476 13 0 0 0 0 1 80000 80000 80000 6400000000
+31	13489 18 0 0 0 0 2 1 1 2 2
+32	13507 9 0 0 0 0 1 0 0 0 0
+33	13516 18 0 0 0 0 2 1 1 2 2
+34	13534 9 0 0 0 0 1 0 0 0 0
+35	13543 12 0 0 0 0 1 7568 7568 7568 57274624
+36	13555 9 0 0 0 0 1 1 1 1 1
+37	13564 9 0 0 0 0 1 1 1 1 1
+38	13573 9 0 0 0 0 1 0 0 0 0
+39	13582 9 0 0 0 0 1 1 1 1 1
+40	13591 9 0 0 0 0 1 0 0 0 0
+
