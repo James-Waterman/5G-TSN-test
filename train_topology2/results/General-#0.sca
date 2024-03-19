@@ -1,8 +1,8 @@
 version 3
-run General-0-20240304-04:14:20-6808
+run General-0-20240318-04:10:35-3526
 attr configname General
-attr datetime 20240304-04:14:20
-attr datetimef 20240304-041420
+attr datetime 20240318-04:10:35
+attr datetimef 20240318-041035
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network TrainTopology2
-attr processid 6808
+attr processid 3526
 attr repetition 0
 attr replication #0
 attr resultdir results
