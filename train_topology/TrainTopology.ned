@@ -42,6 +42,7 @@ network TrainTopology
         **.eth[*].bitrate = default(1Gbps);
 
         **.ethInterface.bitrate = default(1Gbps);
+        **.dstt.bitrate = default(1Gbps);
         @display("bgi=background/train;bgb=4315.567,1647.9696");
     submodules:
         carrierAggregation: CarrierAggregation {

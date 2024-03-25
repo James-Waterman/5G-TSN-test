@@ -56,23 +56,17 @@ module MyLayeredEthernetInterface extends NetworkInterface like IEthernetInterfa
         }
         NWTT: MyNWTT {
             parameters:
-                @display("p=316,108");
+                @display("p=318,108");
         }
     connections allowunconnected:
-        //        upperLayerIn --> { @display("m=n"); } --> processingDelayLayer.upperLayerIn;
-        upperLayerIn --> { @display("m=n"); } --> NWTT.in;
-        NWTT.out --> processingDelayLayer.upperLayerIn;
-        processingDelayLayer.lowerLayerOut --> trafficConditionerLayer.upperLayerIn;
-        trafficConditionerLayer.lowerLayerOut --> measurementLayer.upperLayerIn;
-        measurementLayer.lowerLayerOut --> macLayer.upperLayerIn;
+        upperLayerIn --> NWTT.upperLayerIn;
+        NWTT.lowerLayerOut --> macLayer.upperLayerIn;
         macLayer.lowerLayerOut --> phyLayer.upperLayerIn;
         phyLayer.lowerLayerOut --> { @display("m=s"); } --> phys$o;
 
         phys$i --> { @display("m=s"); } --> phyLayer.lowerLayerIn;
         phyLayer.upperLayerOut --> macLayer.lowerLayerIn;
-        macLayer.upperLayerOut --> measurementLayer.lowerLayerIn;
-        measurementLayer.upperLayerOut --> trafficConditionerLayer.lowerLayerIn;
-        trafficConditionerLayer.upperLayerOut --> processingDelayLayer.lowerLayerIn;
-        processingDelayLayer.upperLayerOut --> { @display("m=n"); } --> upperLayerOut;
+        macLayer.upperLayerOut --> NWTT.lowerLayerIn;
+        NWTT.upperLayerOut --> upperLayerOut;
 }
 

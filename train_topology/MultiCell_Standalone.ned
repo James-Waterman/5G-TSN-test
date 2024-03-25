@@ -10,6 +10,7 @@
 // 
 package train_topology;
 
+//import train_topology.app;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
 import inet.networklayer.ipv4.RoutingTableRecorder;
 import inet.node.ethernet.Eth10G;

@@ -69,8 +69,8 @@ module MyUpf extends NetworkLayerNodeBase
         gtp_user.socketIn <-- at.out++;
 
 
-        gtp_user.pppGate --> NWTT.in;
-        NWTT.out --> trafficFlowFilter.internetFilterGateIn;
+//        gtp_user.pppGate --> NWTT.in;
+//        NWTT.out --> trafficFlowFilter.internetFilterGateIn;
 //        pppIf.upperLayerIn <-- NWTT.pppOut;
 //        NWTT.pppIn <-- pppIf.upperLayerOut;
 //		NWTT.phys <--> filterGate;

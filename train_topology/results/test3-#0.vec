@@ -1,8 +1,8 @@
 version 3
-run test3-0-20240319-08:49:37-9816
+run test3-0-20240321-05:10:43-37864
 attr configname test3
-attr datetime 20240319-08:49:37
-attr datetimef 20240319-084937
+attr datetime 20240321-05:10:43
+attr datetimef 20240321-051043
 attr experiment test3
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network MultiCell_Standalone
-attr processid 9816
+attr processid 37864
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -26,18 +26,20 @@ config *.ue[*].nrMacCellId 1
 config *.ue[*].nrMasterId 1
 config **.dynamicCellAssociation true
 config **.enableHandover true
-config *.ue[*].numApps 1
-config *.ue[*].app[*].typename CbrReceiver
-config *.ue[*].app[*].localPort 3000
+config *.ue[1..7].numApps 1
+config *.ue[0].numApps 2
+config *.ue[*].app[0].typename UdpSink
+config *.ue[*].app[0].localPort 3001
+config *.ue[0].app[1].typename UdpBasicApp
+config *.ue[0].app[1].sendInterval 0.01s
+config *.ue[0].app[1].startTime 0.01s
+config *.ue[0].app[1].messageLength 100B
+config *.ue[0].app[1].destAddresses "\"224.0.1.1\""
+config *.ue[0].app[1].destPort 3000
 config *.server.numApps 1
-config *.server.app[*].typename CbrSender
-config *.server.app[*].PacketSize 100
-config *.server.app[*].sampling_time 0.02s
-config *.server.app[0].destAddress "\"224.0.1.1\""
-config *.server.app[0].destPort 3000
-config *.server.app[0].localPort "3088 + ancestorIndex(0)"
-config *.server.app[0].startTime uniform(0s,0.02s)
-config *.server.app[0].finishTime uniform(19.9s,19.92s)
+config *.server.app[0].typename UdpGroupManagement
+config *.server.app[0].localPort 3000
+config *.server.app[0].localAddress "\"224.0.1.1\""
 
 vector 0 MultiCell_Standalone.server.ppp[0].ppp transmissionState:vector ETV
 attr interpolationmode sample-hold
@@ -429,337 +431,165 @@ attr recordingmode vector
 attr source servingCell
 attr title "ID of the serving eNodeB for the UE"
 attr unit ""
-vector 78 MultiCell_Standalone.ue[0].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
+vector 78 MultiCell_Standalone.server.ppp[0].queue incomingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPushStarted)
+attr title "incoming packet lengths"
+attr unit b
+vector 79 MultiCell_Standalone.server.ppp[0].queue queueingTime:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source queueingTime(packetPulled)
+attr title "queueing times"
+attr unit s
+vector 80 MultiCell_Standalone.server.ppp[0].queue outgoingPacketLengths:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source packetLength(packetPulled)
+attr title "outgoing packet lengths"
+attr unit b
+vector 81 MultiCell_Standalone.server.ppp[0].ppp rcvdPkFromHl:vector(packetBytes) ETV
 attr interpolationmode none
 attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 79 MultiCell_Standalone.ue[0].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 82 MultiCell_Standalone.server.ppp[0].ppp txPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 80 MultiCell_Standalone.ue[1].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
+attr source packetSentToLower
+attr title "packets transmitted, packetBytes"
+vector 83 MultiCell_Standalone.server.ppp[0].queue queueLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + count(packetPushStarted) - count(packetPulled) - count(packetRemoved) - count(packetDropped)))"
+attr title "queue length"
+attr unit pk
+vector 84 MultiCell_Standalone.server.ppp[0].queue queueBitLength:vector ETV
+attr autoWarmupFilter false
+attr interpolationmode sample-hold
+attr recordingmode vector
+attr source "warmup(atomic(constant0(packetPushEnded) + sum(packetLength(packetPushStarted)) - sum(packetLength(packetPulled)) - sum(packetLength(packetRemoved)) - sum(packetLength(packetDropped))))"
+attr title "queue bit length"
+attr unit b
+vector 85 MultiCell_Standalone.router.ppp[0].ppp rxPkOk:vector(packetBytes) ETV
 attr interpolationmode none
 attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 81 MultiCell_Standalone.ue[1].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
+attr source rxPkOk
+attr title "packets received OK, packetBytes"
+vector 86 MultiCell_Standalone.router.ppp[0].ppp passedUpPk:vector(packetBytes) ETV
 attr interpolationmode none
 attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 82 MultiCell_Standalone.ue[2].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 83 MultiCell_Standalone.ue[2].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 84 MultiCell_Standalone.ue[3].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 85 MultiCell_Standalone.ue[3].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 86 MultiCell_Standalone.ue[4].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 87 MultiCell_Standalone.ue[4].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 88 MultiCell_Standalone.ue[5].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 89 MultiCell_Standalone.ue[5].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 90 MultiCell_Standalone.ue[6].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 91 MultiCell_Standalone.ue[6].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 92 MultiCell_Standalone.ue[7].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 93 MultiCell_Standalone.ue[7].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 94 MultiCell_Standalone.ue[0].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 95 MultiCell_Standalone.ue[1].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 96 MultiCell_Standalone.ue[2].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 97 MultiCell_Standalone.ue[3].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 98 MultiCell_Standalone.ue[4].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 99 MultiCell_Standalone.ue[5].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 100 MultiCell_Standalone.ue[6].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 101 MultiCell_Standalone.ue[7].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 102 MultiCell_Standalone.ue[0].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 103 MultiCell_Standalone.ue[1].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 104 MultiCell_Standalone.ue[2].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 105 MultiCell_Standalone.ue[3].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 106 MultiCell_Standalone.ue[4].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 107 MultiCell_Standalone.ue[5].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 108 MultiCell_Standalone.ue[6].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 109 MultiCell_Standalone.ue[7].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromUpperLayer
-vector 110 MultiCell_Standalone.gnb1.cellularNic.mac avgServedBlocksUl:vector ETV
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 87 MultiCell_Standalone.gnb1.cellularNic.mac avgServedBlocksUl:vector ETV
 attr recordingmode vector
 attr source avgServedBlocksUl
 attr title "Avg Served Blocks Ul"
 attr unit blocks
-vector 111 MultiCell_Standalone.gnb1.cellularNic.mac avgServedBlocksDl:vector ETV
+vector 88 MultiCell_Standalone.gnb1.cellularNic.mac avgServedBlocksDl:vector ETV
 attr recordingmode vector
 attr source avgServedBlocksDl
 attr title "Avg Served Blocks Dl"
 attr unit blocks
-vector 112 MultiCell_Standalone.gnb2.cellularNic.mac avgServedBlocksUl:vector ETV
+vector 89 MultiCell_Standalone.gnb2.cellularNic.mac avgServedBlocksUl:vector ETV
 attr recordingmode vector
 attr source avgServedBlocksUl
 attr title "Avg Served Blocks Ul"
 attr unit blocks
-vector 113 MultiCell_Standalone.gnb2.cellularNic.mac avgServedBlocksDl:vector ETV
+vector 90 MultiCell_Standalone.gnb2.cellularNic.mac avgServedBlocksDl:vector ETV
 attr recordingmode vector
 attr source avgServedBlocksDl
 attr title "Avg Served Blocks Dl"
 attr unit blocks
-vector 114 MultiCell_Standalone.ue[0].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 115 MultiCell_Standalone.ue[1].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 116 MultiCell_Standalone.ue[2].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 117 MultiCell_Standalone.ue[3].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 118 MultiCell_Standalone.ue[4].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 119 MultiCell_Standalone.ue[5].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 120 MultiCell_Standalone.ue[6].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 121 MultiCell_Standalone.ue[7].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 122 MultiCell_Standalone.ue[0].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
+vector 91 MultiCell_Standalone.ue[0].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
 attr recordingmode vector
 attr source measuredSinrUl
 attr title "SINR measured at feedback computation, UL"
 attr unit dB
-vector 123 MultiCell_Standalone.ue[0].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
+vector 92 MultiCell_Standalone.ue[0].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
 attr recordingmode vector
 attr source measuredSinrDl
 attr title "SINR measured at feedback computation, DL"
 attr unit dB
-vector 124 MultiCell_Standalone.gnb1.cellularNic.mac receivedPacketFromLowerLayer:vector(packetBytes) ETV
+vector 93 MultiCell_Standalone.gnb1.cellularNic.mac receivedPacketFromLowerLayer:vector(packetBytes) ETV
 attr interpolationmode none
 attr recordingmode vector(packetBytes)
 attr source receivedPacketFromLowerLayer
-vector 125 MultiCell_Standalone.ue[1].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
+vector 94 MultiCell_Standalone.ue[1].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
 attr recordingmode vector
 attr source measuredSinrUl
 attr title "SINR measured at feedback computation, UL"
 attr unit dB
-vector 126 MultiCell_Standalone.ue[1].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
+vector 95 MultiCell_Standalone.ue[1].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
 attr recordingmode vector
 attr source measuredSinrDl
 attr title "SINR measured at feedback computation, DL"
 attr unit dB
-vector 127 MultiCell_Standalone.ue[2].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
+vector 96 MultiCell_Standalone.ue[2].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
 attr recordingmode vector
 attr source measuredSinrUl
 attr title "SINR measured at feedback computation, UL"
 attr unit dB
-vector 128 MultiCell_Standalone.ue[2].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
+vector 97 MultiCell_Standalone.ue[2].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
 attr recordingmode vector
 attr source measuredSinrDl
 attr title "SINR measured at feedback computation, DL"
 attr unit dB
-vector 129 MultiCell_Standalone.ue[3].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
+vector 98 MultiCell_Standalone.ue[3].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
 attr recordingmode vector
 attr source measuredSinrUl
 attr title "SINR measured at feedback computation, UL"
 attr unit dB
-vector 130 MultiCell_Standalone.ue[3].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
+vector 99 MultiCell_Standalone.ue[3].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
 attr recordingmode vector
 attr source measuredSinrDl
 attr title "SINR measured at feedback computation, DL"
 attr unit dB
-vector 131 MultiCell_Standalone.ue[4].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
+vector 100 MultiCell_Standalone.ue[4].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
 attr recordingmode vector
 attr source measuredSinrUl
 attr title "SINR measured at feedback computation, UL"
 attr unit dB
-vector 132 MultiCell_Standalone.ue[4].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
+vector 101 MultiCell_Standalone.ue[4].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
 attr recordingmode vector
 attr source measuredSinrDl
 attr title "SINR measured at feedback computation, DL"
 attr unit dB
-vector 133 MultiCell_Standalone.ue[5].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
+vector 102 MultiCell_Standalone.ue[5].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
 attr recordingmode vector
 attr source measuredSinrUl
 attr title "SINR measured at feedback computation, UL"
 attr unit dB
-vector 134 MultiCell_Standalone.ue[5].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
+vector 103 MultiCell_Standalone.ue[5].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
 attr recordingmode vector
 attr source measuredSinrDl
 attr title "SINR measured at feedback computation, DL"
 attr unit dB
-vector 135 MultiCell_Standalone.ue[6].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
+vector 104 MultiCell_Standalone.ue[6].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
 attr recordingmode vector
 attr source measuredSinrUl
 attr title "SINR measured at feedback computation, UL"
 attr unit dB
-vector 136 MultiCell_Standalone.ue[6].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
+vector 105 MultiCell_Standalone.ue[6].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
 attr recordingmode vector
 attr source measuredSinrDl
 attr title "SINR measured at feedback computation, DL"
 attr unit dB
-vector 137 MultiCell_Standalone.ue[7].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
+vector 106 MultiCell_Standalone.ue[7].cellularNic.nrChannelModel[0] measuredSinrUl:vector ETV
 attr recordingmode vector
 attr source measuredSinrUl
 attr title "SINR measured at feedback computation, UL"
 attr unit dB
-vector 138 MultiCell_Standalone.ue[7].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
+vector 107 MultiCell_Standalone.ue[7].cellularNic.nrChannelModel[0] measuredSinrDl:vector ETV
 attr recordingmode vector
 attr source measuredSinrDl
 attr title "SINR measured at feedback computation, DL"
 attr unit dB
-vector 139 MultiCell_Standalone.gnb1.cellularNic.mac sentPacketToLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source sentPacketToLowerLayer
-vector 140 MultiCell_Standalone.ue[0].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromLowerLayer
-vector 141 MultiCell_Standalone.ue[1].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromLowerLayer
-vector 142 MultiCell_Standalone.ue[2].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromLowerLayer
-vector 143 MultiCell_Standalone.ue[3].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromLowerLayer
-vector 144 MultiCell_Standalone.ue[4].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromLowerLayer
-vector 145 MultiCell_Standalone.ue[5].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromLowerLayer
-vector 146 MultiCell_Standalone.ue[6].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromLowerLayer
-vector 147 MultiCell_Standalone.ue[7].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
-attr interpolationmode none
-attr recordingmode vector(packetBytes)
-attr source receivedPacketFromLowerLayer
-vector 148 MultiCell_Standalone.ue[0].cellularNic.nrPhy averageCqiUl:vector ETV
-attr recordingmode vector
-attr source averageCqiUl
-attr title "Average Cqi reported in UL"
-attr unit cqi
-vector 149 MultiCell_Standalone.ue[1].cellularNic.nrPhy averageCqiUl:vector ETV
-attr recordingmode vector
-attr source averageCqiUl
-attr title "Average Cqi reported in UL"
-attr unit cqi
-vector 150 MultiCell_Standalone.ue[0].cellularNic.nrChannelModel[0] rcvdSinrUl:vector ETV
-attr recordingmode vector
-attr source rcvdSinrUl
-attr title "SINR measured at packet reception, UL"
-attr unit dB
-vector 151 MultiCell_Standalone.ue[1].cellularNic.nrChannelModel[0] rcvdSinrUl:vector ETV
-attr recordingmode vector
-attr source rcvdSinrUl
-attr title "SINR measured at packet reception, UL"
-attr unit dB
-vector 152 MultiCell_Standalone.ue[0].cellularNic.nrMac macDelayUl:vector ETV
-attr recordingmode vector
-attr source macDelayUl
-attr title "Delay at the MAC layer UL"
-attr unit s
-vector 153 MultiCell_Standalone.ue[1].cellularNic.nrMac macDelayUl:vector ETV
-attr recordingmode vector
-attr source macDelayUl
-attr title "Delay at the MAC layer UL"
-attr unit s
 0	0	0	0
+0	29	0	1
+0	81	0.0000000312	0
 1	0	0	0
 2	0	0	0
 3	0	0	0
@@ -816,243 +646,293 @@ attr unit s
 54	0	0	0
 55	0	0	390.51248379533
 55	0	0	807.98137920128
-55	77	0	390.51248379533
-55	94	0	807.98137920128
+55	49	0	390.51248379533
+55	66	0	807.98137920128
 56	0	0	1
 57	0	0	0
 58	0	0	390.51248379533
 58	0	0	807.98137920128
-58	79	0	390.51248379533
-58	96	0	807.98137920128
+58	51	0	390.51248379533
+58	68	0	807.98137920128
 59	0	0	1
 60	0	0	0
 61	0	0	390.51248379533
 61	0	0	807.98137920128
-61	81	0	390.51248379533
-61	98	0	807.98137920128
+61	53	0	390.51248379533
+61	70	0	807.98137920128
 62	0	0	1
 63	0	0	0
 64	0	0	390.51248379533
 64	0	0	807.98137920128
-64	83	0	390.51248379533
-64	100	0	807.98137920128
+64	55	0	390.51248379533
+64	72	0	807.98137920128
 65	0	0	1
 66	0	0	0
 67	0	0	390.51248379533
 67	0	0	807.98137920128
-67	85	0	390.51248379533
-67	102	0	807.98137920128
+67	57	0	390.51248379533
+67	74	0	807.98137920128
 68	0	0	1
 69	0	0	0
 70	0	0	390.51248379533
 70	0	0	807.98137920128
-70	87	0	390.51248379533
-70	104	0	807.98137920128
+70	59	0	390.51248379533
+70	76	0	807.98137920128
 71	0	0	1
 72	0	0	0
 73	0	0	390.51248379533
 73	0	0	807.98137920128
-73	89	0	390.51248379533
-73	106	0	807.98137920128
+73	61	0	390.51248379533
+73	78	0	807.98137920128
 74	0	0	1
 75	0	0	0
 76	0	0	390.51248379533
 76	0	0	807.98137920128
-76	91	0	390.51248379533
-76	108	0	807.98137920128
+76	63	0	390.51248379533
+76	80	0	807.98137920128
 77	0	0	1
-78	43	0	32
-79	43	0	33
-80	44	0	32
-81	44	0	33
-82	45	0	32
-83	45	0	33
-84	46	0	32
-85	46	0	33
-86	47	0	32
-87	47	0	33
-88	48	0	32
-89	48	0	33
-90	49	0	32
-91	49	0	33
-92	50	0	32
-93	50	0	33
-94	51	0	33
-95	52	0	33
-96	53	0	33
-97	54	0	33
-98	55	0	33
-99	56	0	33
-100	57	0	33
-101	58	0	33
-102	67	0	35
-103	68	0	35
-104	69	0	35
-105	70	0	35
-106	71	0	35
-107	72	0	35
-108	73	0	35
-109	74	0	35
-110	117	0.001	0
-110	145	0.002	0
-110	205	0.003	2
-110	243	0.004	0
-110	267	0.005	0
-110	299	0.006	0
-110	339	0.007	0
-110	383	0.008	2
-111	117	0.001	0
-111	145	0.002	0
-111	205	0.003	0
-111	243	0.004	0
-111	267	0.005	0
-111	299	0.006	0
-111	339	0.007	0
-111	383	0.008	0
-112	118	0.001	0
-112	146	0.002	0
-112	208	0.003	0
-112	244	0.004	0
-112	268	0.005	0
-112	300	0.006	0
-112	340	0.007	0
-112	386	0.008	0
-113	118	0.001	0
-113	146	0.002	0
-113	208	0.003	0
-113	244	0.004	0
-113	268	0.005	0
-113	300	0.006	0
-113	340	0.007	0
-113	386	0.008	0
-114	120	0.001	1
-114	287	0.005	2
-114	302	0.006	1
-115	123	0.001	1
-115	289	0.005	2
-115	305	0.006	1
-116	126	0.001	1
-116	308	0.006	1
-117	129	0.001	1
-117	311	0.006	1
-118	132	0.001	1
-118	314	0.006	1
-119	135	0.001	1
-119	317	0.006	1
-120	138	0.001	1
-120	320	0.006	1
-121	141	0.001	1
-121	323	0.006	1
-122	165	0.002	26.754400000576
-122	405	0.008	26.754400000576
-123	165	0.002	31.899022903139
-123	405	0.008	31.899022903139
-124	166	0.002	1
-124	168	0.002	1
-124	170	0.002	1
-124	172	0.002	1
-124	174	0.002	1
-124	176	0.002	1
-124	178	0.002	1
-124	180	0.002	1
-124	182	0.002	1
-124	185	0.002	1
-124	188	0.002	1
-124	191	0.002	1
-124	194	0.002	1
-124	197	0.002	1
-124	200	0.002	1
-124	203	0.002	1
-124	328	0.006	2
-124	330	0.006	2
-124	360	0.007	1
-124	363	0.007	1
-124	366	0.007	1
-124	369	0.007	1
-124	372	0.007	1
-124	375	0.007	1
-124	378	0.007	1
-124	381	0.007	1
-124	406	0.008	1
-124	408	0.008	1
-124	410	0.008	1
-124	412	0.008	1
-124	414	0.008	1
-124	416	0.008	1
-124	418	0.008	1
-124	420	0.008	1
-125	167	0.002	22.224986772006
-125	407	0.008	22.224986772006
-126	167	0.002	38.30075983056
-126	407	0.008	38.30075983056
-127	169	0.002	21.788626724893
-127	409	0.008	21.788626724893
-128	169	0.002	35.411936225878
-128	409	0.008	35.411936225878
-129	171	0.002	8.848946479598
-129	411	0.008	8.848946479598
-130	171	0.002	28.968343229132
-130	411	0.008	28.968343229132
-131	173	0.002	12.562790872346
-131	413	0.008	12.562790872346
-132	173	0.002	41.948193806836
-132	413	0.008	41.948193806836
-133	175	0.002	17.550928283518
-133	415	0.008	17.550928283518
-134	175	0.002	36.875946572816
-134	415	0.008	36.875946572816
-135	177	0.002	16.3953470508
-135	417	0.008	16.3953470508
-136	177	0.002	17.892124394196
-136	417	0.008	17.892124394196
-137	179	0.002	7.9525289792138
-137	419	0.008	7.9525289792138
-138	179	0.002	32.785980239563
-138	419	0.008	32.785980239563
-139	182	0.002	1
-139	185	0.002	1
-139	188	0.002	1
-139	191	0.002	1
-139	194	0.002	1
-139	197	0.002	1
-139	200	0.002	1
-139	203	0.002	1
-139	205	0.003	1
-139	205	0.003	1
-139	360	0.007	1
-139	363	0.007	1
-139	366	0.007	1
-139	369	0.007	1
-139	372	0.007	1
-139	375	0.007	1
-139	378	0.007	1
-139	381	0.007	1
-139	383	0.008	1
-139	383	0.008	1
-139	437	0.009	1
-139	437	0.009	1
-140	228	0.003	1
-140	264	0.004	1
-140	422	0.008	1
-141	230	0.003	1
-141	266	0.004	1
-141	424	0.008	1
-142	232	0.003	1
-142	426	0.008	1
-143	234	0.003	1
-143	428	0.008	1
-144	236	0.003	1
-144	430	0.008	1
-145	238	0.003	1
-145	432	0.008	1
-146	240	0.003	1
-146	434	0.008	1
-147	242	0.003	1
-147	436	0.008	1
-148	288	0.005	13
-149	290	0.005	12
-150	327	0.006	27.435846224933
-151	329	0.006	23.832009457185
-152	437	0.009	0.004
-153	437	0.009	0.004
+78	29	0	256
+79	29	0	0
+80	29	0	256
+81	29	0	32
+82	29	0	39
+83	29	0	0
+84	29	0	0
+85	82	0.0000000812	39
+86	82	0.0000000812	32
+87	92	0.001	0
+87	112	0.002	0
+87	148	0.003	0
+87	168	0.004	0
+87	188	0.005	0
+87	216	0.006	0
+87	244	0.007	0
+87	264	0.008	0
+87	300	0.009	0
+88	92	0.001	0
+88	112	0.002	0
+88	148	0.003	0
+88	168	0.004	0
+88	188	0.005	0
+88	216	0.006	0
+88	244	0.007	0
+88	264	0.008	0
+88	300	0.009	0
+89	93	0.001	0
+89	113	0.002	0
+89	149	0.003	0
+89	169	0.004	0
+89	189	0.005	0
+89	217	0.006	0
+89	245	0.007	0
+89	265	0.008	0
+89	301	0.009	0
+90	93	0.001	0
+90	113	0.002	0
+90	149	0.003	0
+90	169	0.004	0
+90	189	0.005	0
+90	217	0.006	0
+90	245	0.007	0
+90	265	0.008	0
+90	301	0.009	0
+91	132	0.002	11.191359688929
+91	284	0.008	11.191359688929
+92	132	0.002	35.668072902632
+92	284	0.008	35.668072902632
+93	133	0.002	1
+93	135	0.002	1
+93	137	0.002	1
+93	139	0.002	1
+93	141	0.002	1
+93	143	0.002	1
+93	145	0.002	1
+93	147	0.002	1
+93	285	0.008	1
+93	287	0.008	1
+93	289	0.008	1
+93	291	0.008	1
+93	293	0.008	1
+93	295	0.008	1
+93	297	0.008	1
+93	299	0.008	1
+94	134	0.002	26.804046457269
+94	286	0.008	26.804046457269
+95	134	0.002	41.517952236248
+95	286	0.008	41.517952236248
+96	136	0.002	15.802284061004
+96	288	0.008	15.802284061004
+97	136	0.002	39.211394208217
+97	288	0.008	39.211394208217
+98	138	0.002	8.8055269613737
+98	290	0.008	8.8055269613737
+99	138	0.002	30.828552178851
+99	290	0.008	30.828552178851
+100	140	0.002	17.657813508766
+100	292	0.008	17.657813508766
+101	140	0.002	33.576834117086
+101	292	0.008	33.576834117086
+102	142	0.002	12.809612517451
+102	294	0.008	12.809612517451
+103	142	0.002	18.520883361438
+103	294	0.008	18.520883361438
+104	144	0.002	12.922303957422
+104	296	0.008	12.922303957422
+105	144	0.002	29.208981665377
+105	296	0.008	29.208981665377
+106	146	0.002	13.231420602757
+106	298	0.008	13.231420602757
+107	146	0.002	35.259401386262
+107	298	0.008	35.259401386262
+vector 108 MultiCell_Standalone.ue[0].app[1] packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSent
+attr title "packets sent, packetBytes"
+vector 109 MultiCell_Standalone.ue[0].udp packetSent:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSent
+attr title "packets sent, packetBytes"
+vector 110 MultiCell_Standalone.ue[0].lo[0].lo rcvdPkFromHl:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceivedFromUpper
+attr title "packets received from higher layer, packetBytes"
+vector 111 MultiCell_Standalone.ue[0].lo[0].lo passedUpPk:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetSentToUpper
+attr title "packets passed to higher layer, packetBytes"
+vector 112 MultiCell_Standalone.ue[0].cellularNic.pdcpRrc receivedPacketFromUpperLayer:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source receivedPacketFromUpperLayer
+vector 113 MultiCell_Standalone.ue[0].cellularNic.pdcpRrc sentPacketToLowerLayer:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source sentPacketToLowerLayer
+vector 114 MultiCell_Standalone.ue[0].udp packetReceived:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source packetReceived
+attr title "packets received, packetBytes"
+vector 115 MultiCell_Standalone.ue[0].cellularNic.nrRlc.um receivedPacketFromUpperLayer:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source receivedPacketFromUpperLayer
+vector 116 MultiCell_Standalone.ue[0].cellularNic.nrMac receivedPacketFromUpperLayer:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source receivedPacketFromUpperLayer
+vector 117 MultiCell_Standalone.ue[0].cellularNic.nrMac sentPacketToLowerLayer:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source sentPacketToLowerLayer
+vector 118 MultiCell_Standalone.gnb1.cellularNic.mac sentPacketToLowerLayer:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source sentPacketToLowerLayer
+vector 119 MultiCell_Standalone.ue[0].cellularNic.nrMac receivedPacketFromLowerLayer:vector(packetBytes) ETV
+attr interpolationmode none
+attr recordingmode vector(packetBytes)
+attr source receivedPacketFromLowerLayer
+vector 120 MultiCell_Standalone.ue[0].cellularNic.nrPhy averageCqiUl:vector ETV
+attr recordingmode vector
+attr source averageCqiUl
+attr title "Average Cqi reported in UL"
+attr unit cqi
+vector 121 MultiCell_Standalone.ue[0].cellularNic.nrChannelModel[0] rcvdSinrUl:vector ETV
+attr recordingmode vector
+attr source rcvdSinrUl
+attr title "SINR measured at packet reception, UL"
+attr unit dB
+vector 122 MultiCell_Standalone.ue[0].cellularNic.nrMac macDelayUl:vector ETV
+attr recordingmode vector
+attr source macDelayUl
+attr title "Delay at the MAC layer UL"
+attr unit s
+31	328	0.01	1
+87	332	0.01	0
+87	353	0.011	0
+87	384	0.012	1
+87	415	0.013	0
+87	437	0.014	0
+87	475	0.015	0
+87	498	0.016	0
+87	521	0.017	1
+88	332	0.01	0
+88	353	0.011	0
+88	384	0.012	0
+88	415	0.013	0
+88	437	0.014	0
+88	475	0.015	0
+88	498	0.016	0
+88	521	0.017	0
+89	333	0.01	0
+89	354	0.011	0
+89	386	0.012	0
+89	416	0.013	0
+89	438	0.014	0
+89	476	0.015	0
+89	499	0.016	0
+89	523	0.017	0
+90	333	0.01	0
+90	354	0.011	0
+90	386	0.012	0
+90	416	0.013	0
+90	438	0.014	0
+90	476	0.015	0
+90	499	0.016	0
+90	523	0.017	0
+91	459	0.014	11.191359688929
+92	459	0.014	35.668072902632
+93	374	0.011	1
+93	460	0.014	1
+93	462	0.014	1
+93	464	0.014	1
+93	466	0.014	1
+93	468	0.014	1
+93	470	0.014	1
+93	472	0.014	1
+93	474	0.014	1
+93	497	0.015	2
+93	519	0.016	1
+94	461	0.014	26.804046457269
+95	461	0.014	41.517952236248
+96	463	0.014	15.802284061004
+97	463	0.014	39.211394208217
+98	465	0.014	8.8055269613737
+99	465	0.014	30.828552178851
+100	467	0.014	17.657813508766
+101	467	0.014	33.576834117086
+102	469	0.014	12.809612517451
+103	469	0.014	18.520883361438
+104	471	0.014	12.922303957422
+105	471	0.014	29.208981665377
+106	473	0.014	13.231420602757
+107	473	0.014	35.259401386262
+108	320	0.01	100
+109	322	0.01	108
+110	324	0.01	128
+111	324	0.01	128
+112	327	0.01	128
+113	327	0.01	129
+114	328	0.01	108
+115	329	0.01	129
+116	331	0.01	131
+117	335	0.01	1
+117	457	0.014	2
+117	478	0.015	1
+118	374	0.011	1
+118	384	0.012	1
+118	519	0.016	1
+118	521	0.017	1
+118	552	0.018	1
+119	406	0.012	1
+119	436	0.013	1
+119	543	0.017	1
+120	458	0.014	6
+121	496	0.015	9.6989757403817
+122	552	0.018	0.004
 

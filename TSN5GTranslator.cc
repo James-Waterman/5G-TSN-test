@@ -47,7 +47,7 @@ void TSN5GTranslator::initialize()
 }
 void TSN5GTranslator::sendPacket(Packet *pkt)
 {
-    socket.setOutputGate(gate("out"));
+    socket.setOutputGate(gate("upperLayerOut"));
     socket.bind(localPort);
     int tos = par("tos");
     if (tos != -1)
@@ -65,7 +65,7 @@ void TSN5GTranslator::handleMessage(cMessage *msg)
     if (strcmp(msg->getName(),"closed") == 0) {
         EV << "closed bind" << endl;
     }
-    else if (strcmp(msg->getArrivalGate()->getName(),"in") == 0){
+    else if (strcmp(msg->getArrivalGate()->getName(),"upperLayerIn") == 0){
         Packet *pkt = check_and_cast<Packet *>(msg);
         pkt->removeTagIfPresent<InterfaceInd>();
         pkt->removeTagIfPresent<NetworkProtocolInd>();
@@ -90,22 +90,28 @@ void TSN5GTranslator::handleMessage(cMessage *msg)
         new_emh->setDest(new_mac);
         new_emh->setTypeOrLength(emh->getTypeOrLength());
         pkt->insertAtFront(new_emh);
-        pkt->insertAtFront(eph);
+//        pkt->insertAtFront(eph);
         const auto& new_enf = makeShared<EthernetFcs>();
         new_enf->setFcs(3222126605);
         new_enf->setFcsMode(FCS_DECLARED_CORRECT);
-        pkt->insertAtBack(new_enf);
-        pkt->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetPhy);
-        Signal *signal = new Signal(msg->getFullName(), msg->getKind(), pkt->getBitLength());
-        signal->encapsulate(pkt);
-        EV << signal->getByteLength() << endl;
-        send(signal, "phys$o");
+//        pkt->insertAtBack(new_enf);
+//        pkt->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetPhy);
+//        Signal *signal = new Signal(msg->getFullName(), msg->getKind(), pkt->getBitLength());
+//        signal->encapsulate(pkt);
+//        EV << signal->getByteLength() << endl;
+        Packet* newPkt = new Packet(*pkt);
+        send(newPkt, "lowerLayerOut");
     }
     else {
-        Signal *signal = check_and_cast<Signal *>(msg);
-        Packet *pkt = check_and_cast<Packet *>(signal->decapsulate());
-        auto eph = pkt->popAtFront<EthernetPhyHeader>();
+        EV << "111" << endl;
+//        Signal *signal = check_and_cast<Signal *>(msg);
+        EV << "222" << endl;
+        Packet *pkt = check_and_cast<Packet *>(msg);
+        EV << "333" << endl;
+//        auto eph = pkt->popAtFront<EthernetPhyHeader>();
+        EV << "444" << endl;
         auto emh = pkt->popAtFront<EthernetMacHeader>();
+        EV << "555" << endl;
         srcMacAddress = emh->getSrc();
         sendPacket(pkt);
     }

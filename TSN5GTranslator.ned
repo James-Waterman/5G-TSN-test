@@ -23,10 +23,12 @@ simple TSN5GTranslator {
     gates:
 //        input pppIn;
 //        output pppOut;
-        inout phys @loose;
+//        inout phys @loose;
 //        input ethgIn;
 //        output ethgOut;
-        input in;
-        output out;
+        input upperLayerIn;
+        output upperLayerOut;
+        input lowerLayerIn;
+        output lowerLayerOut;
 
 }

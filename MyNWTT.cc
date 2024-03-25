@@ -39,7 +39,9 @@ void MyNWTT::initialize()
 
 void MyNWTT::handleMessage(cMessage *msg)
 {
-    if (strcmp(msg->getArrivalGate()->getName(),"in") == 0){
+    EV << msg->getArrivalGate()->getName() << endl;
+    if (strcmp(msg->getArrivalGate()->getName(),"upperLayerIn") == 0){
+
         Packet *pkt = check_and_cast<Packet *>(msg);
         auto iph0 = pkt->peekAtFront<Ipv4Header>();
         string gatewayIpAddress = iph0->getSrcAddress().str();
@@ -55,6 +57,7 @@ void MyNWTT::handleMessage(cMessage *msg)
         auto iph = pkt->popAtFront<Ipv4Header>();
         string senderIpAddress = iph->getSrcAddress().str();
         ipMap[senderIpAddress] = gatewayIpAddress;
+        EV << senderIpAddress << " " << gatewayIpAddress << endl;
         // get destAddress
         auto a = iph->getTag<MyTag>();
         const MacAddress& new_mac = a->destAddress;
@@ -66,8 +69,8 @@ void MyNWTT::handleMessage(cMessage *msg)
         pkt->insertAtFront(iph);
         pkt->insertAtFront(iteh);
         pkt->insertAtFront(new_emh);
-        //pkt->insertAtFront(eph);
-        //pkt->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetPhy);
+//        pkt->insertAtFront(eph);
+//        pkt->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetPhy);
         if (iteh->getPcp() == 0) pkt->setName("besteffort");
         if (iteh->getPcp() == 4) pkt->setName("video");
 //        Signal *signal = new Signal(msg->getFullName(), msg->getKind(), pkt->getBitLength());
@@ -76,9 +79,67 @@ void MyNWTT::handleMessage(cMessage *msg)
 //        cChannel *datarateChannel = physOutGate->getTransmissionChannel();
 //        while (datarateChannel->isBusy());
         Packet *newPkt = new Packet(*pkt);
-        send(newPkt, "out");
+
+        send(newPkt, "lowerLayerOut");
+    }
+    else if (strcmp(msg->getArrivalGate()->getName(),"lowerLayerIn") == 0) {
+        EV << "tets" << endl;
+//        Signal *signal = check_and_cast<Signal *>(msg);
+        Packet *pkt = check_and_cast<Packet *>(msg);
+//        auto eph = pkt->popAtFront<EthernetPhyHeader>();
+        auto emh = pkt->popAtFront<EthernetMacHeader>();
+        // TSN
+        auto iteh = pkt->popAtFront<Ieee8021qTagEpdHeader>();
+        auto iph = pkt->popAtFront<Ipv4Header>();
+        auto uph = pkt->popAtFront<UdpHeader>();
+        pkt->insertAtFront(uph);
+        pkt->insertAtFront(iph);
+        pkt->insertAtFront(iteh);
+        pkt->insertAtFront(emh);
+        const auto& eph = makeShared<EthernetPhyHeader>();
+        eph->setChunkLength(B(8));
+        pkt->insertAtFront(eph);
+        const auto& new_uph = makeShared<UdpHeader>();
+        new_uph->setDestPort(12340);
+        new_uph->setDestinationPort(12340);
+        new_uph->setChunkLength(uph->getChunkLength());
+        new_uph->setSourcePort(uph->getSourcePort());
+        new_uph->setSrcPort(uph->getSrcPort());
+        new_uph->setCrc(uph->getCrc());
+        new_uph->setCrcMode(uph->getCrcMode());
+        new_uph->setTotalLengthField(pkt->getDataLength()+new_uph->getChunkLength());
+        pkt->insertAtFront(new_uph);
+        Ipv4Address& add = const_cast<Ipv4Address&>(iph->getDestAddress());
+        Ipv4Address* new_add = new Ipv4Address(add);
+
+        string destAddress = iph->getDestAddress().str();
+        EV << "ip address:" << destAddress << endl;
+        if (ipMap.find(destAddress) == ipMap.end()) return ;
+        char* destIpAddress = const_cast<char *>(ipMap[destAddress].c_str());
+        new_add->set(destIpAddress);
+        const auto& new_iph = makeShared<Ipv4Header>();
+        new_iph->setDestAddress(*new_add);
+        new_iph->setSrcAddress(iph->getSrcAddress());
+        new_iph->setChunkLength(iph->getChunkLength());
+        new_iph->setCrc(iph->getCrc());
+        new_iph->setCrcMode(iph->getCrcMode());
+        new_iph->setProtocol(iph->getProtocol());
+        new_iph->setProtocolId(iph->getProtocolId());
+        new_iph->setOptions(iph->getOptions());
+        new_iph->setTimeToLive(iph->getTimeToLive());
+        new_iph->setTotalLengthField(pkt->getDataLength()+new_iph->getChunkLength());
+        new_iph->setIdentification(iph->getIdentification());
+        if (iteh->getPcp() == 0) pkt->setName("besteffort");
+        if (iteh->getPcp() == 4) pkt->setName("video");
+        pkt->insertAtFront(new_iph);
+        pkt->trim();
+        pkt->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ipv4);
+        EV << "test" << endl;
+        send(pkt, "upperLayerOut");
+        return;
     }
     else {
+        EV << "tets" << endl;
         Signal *signal = check_and_cast<Signal *>(msg);
         Packet *pkt = check_and_cast<Packet *>(signal->decapsulate());
         auto eph = pkt->popAtFront<EthernetPhyHeader>();
@@ -109,32 +170,25 @@ void MyNWTT::handleMessage(cMessage *msg)
         EV << "ip address:" << destAddress << endl;
         vector<string> ans = opp_split(destAddress, ".");
         int first = stoi(ans[0]);
-        bool group = false;
-        if (first >= 224 && first <= 239){
-            EV << "It is a group frame" << endl;
-
-        }
-        else {
-            if (ipMap.find(iph->getDestAddress().str()) == ipMap.end() && !group) return ;
-            char* destIpAddress = const_cast<char *>(ipMap[iph->getDestAddress().str()].c_str());
-            new_add->set(destIpAddress);
-            const auto& new_iph = makeShared<Ipv4Header>();
-            new_iph->setDestAddress(*new_add);
-            new_iph->setSrcAddress(iph->getSrcAddress());
-            new_iph->setChunkLength(iph->getChunkLength());
-            new_iph->setCrc(iph->getCrc());
-            new_iph->setCrcMode(iph->getCrcMode());
-            new_iph->setProtocol(iph->getProtocol());
-            new_iph->setProtocolId(iph->getProtocolId());
-            new_iph->setOptions(iph->getOptions());
-            new_iph->setTimeToLive(iph->getTimeToLive());
-            new_iph->setTotalLengthField(pkt->getDataLength()+new_iph->getChunkLength());
-            new_iph->setIdentification(iph->getIdentification());
-            pkt->insertAtFront(new_iph);
-            pkt->trim();
-            pkt->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ipv4);
-            send(pkt, "out");
-        }
+        if (ipMap.find(iph->getDestAddress().str()) == ipMap.end()) return ;
+        char* destIpAddress = const_cast<char *>(ipMap[iph->getDestAddress().str()].c_str());
+        new_add->set(destIpAddress);
+        const auto& new_iph = makeShared<Ipv4Header>();
+        new_iph->setDestAddress(*new_add);
+        new_iph->setSrcAddress(iph->getSrcAddress());
+        new_iph->setChunkLength(iph->getChunkLength());
+        new_iph->setCrc(iph->getCrc());
+        new_iph->setCrcMode(iph->getCrcMode());
+        new_iph->setProtocol(iph->getProtocol());
+        new_iph->setProtocolId(iph->getProtocolId());
+        new_iph->setOptions(iph->getOptions());
+        new_iph->setTimeToLive(iph->getTimeToLive());
+        new_iph->setTotalLengthField(pkt->getDataLength()+new_iph->getChunkLength());
+        new_iph->setIdentification(iph->getIdentification());
+        pkt->insertAtFront(new_iph);
+        pkt->trim();
+        pkt->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ipv4);
+        send(pkt, "out");
 
     }
 

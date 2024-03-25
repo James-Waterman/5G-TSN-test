@@ -37,12 +37,12 @@ module TsnUe extends NRUe
     gates:
         inout phys;
     submodules:
-        dstt: TSN5GTranslator {
+        dstt: MyLayeredEthernetInterfaceDS {
             @display("p=575,65");
         }
     connections allowunconnected:
         dstt.phys <--> phys;
-		dstt.out --> at.in++;
-		dstt.in <-- at.out++;
+		dstt.upperLayerOut --> at.in++;
+		dstt.upperLayerIn <-- at.out++;
 
 }

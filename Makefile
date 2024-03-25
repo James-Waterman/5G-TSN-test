@@ -33,7 +33,7 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/MyNWTT.o $O/TSN5GTranslator.o
+OBJS = $O/MyNWTT.o $O/TSN5GTranslator.o $O/UdpGroupManagement.o
 
 # Message files
 MSGFILES =
